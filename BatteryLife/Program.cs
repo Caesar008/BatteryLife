@@ -93,7 +93,7 @@ namespace BatteryLife
             Battery battery;
             private bool present = false;
             private Windows.System.Power.BatteryStatus status;
-            private int?[] chargeHistory = new int?[10];
+            private int?[] chargeHistory = new int?[30];
             private int krok = 0;
             private bool init = false;
             private TimeSpan timeRemaining;
@@ -194,7 +194,7 @@ namespace BatteryLife
                             kapacita = report.FullChargeCapacityInMilliwattHours;
                             zbyva = report.RemainingCapacityInMilliwattHours;
                             nabijeni = report.ChargeRateInMilliwatts;
-                            chargeHistory[krok % 10] = nabijeni;
+                            chargeHistory[krok % 30] = nabijeni;
 
                             if (init)
                             {
@@ -222,7 +222,7 @@ namespace BatteryLife
                     {
 
                     }
-                    if (krok % 10 == 9)
+                    if (krok % 30 == 29)
                     {
                         krok = 0;
                         init = true;
