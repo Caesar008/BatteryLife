@@ -57,18 +57,25 @@ namespace BatteryLife
                     if (counter.Status == Windows.System.Power.BatteryStatus.Charging)
                     {
                         //text += "Nabíjení: " + counter.Nabijeni + " mW.\r\n";
+                        if (counter.TimeRemaining != TimeSpan.Zero && counter.TimeRemaining != TimeSpan.MaxValue)
+                        {
+                            text += "Plné nabití za: " + counter.TimeRemaining.ToString("h\\:mm");
+                        }
+                        else
+                            text += "Probíhá výpočet času...";
                     }
                     else if (counter.Status == Windows.System.Power.BatteryStatus.Discharging)
                     {
                         //text += "Vybíjení: " + (counter.Nabijeni) * -1 + " mW.\r\n";
+                        if (counter.TimeRemaining != TimeSpan.Zero && counter.TimeRemaining != TimeSpan.MaxValue)
+                        {
+                            text += "Zbývající čas: " + counter.TimeRemaining.ToString("h\\:mm");
+                        }
+                        else
+                            text += "Probíhá výpočet času...";
                     }
                     else
                         text += "Nenabíjí.";
-
-                    if (counter.TimeRemaining != TimeSpan.Zero && counter.TimeRemaining != TimeSpan.MaxValue && counter.Status != Windows.System.Power.BatteryStatus.Idle)
-                    {
-                        text += "Zbývající čas: " + counter.TimeRemaining.ToString("h\\:mm");
-                    }
 
                 }
                 else { text = "Baterie není připojena."; }
@@ -205,15 +212,34 @@ namespace BatteryLife
                                 }
                                 int prumernaSpotreba = (int)Math.Round((double)celkemSpotreba / 30d, 0, MidpointRounding.AwayFromZero);
 
-                                double cas = (double)zbyva / Math.Abs(prumernaSpotreba);
-                                if (!double.IsInfinity(cas))
+                                if (report.Status == Windows.System.Power.BatteryStatus.Discharging)
                                 {
-                                    int hodiny = (int)cas;
-                                    int minuty = (int)Math.Round((cas - (double)hodiny) * 60d, 0, MidpointRounding.AwayFromZero);
-                                    timeRemaining = new TimeSpan(hodiny, minuty, 0);
+                                    double cas = (double)zbyva / Math.Abs(prumernaSpotreba);
+                                    if (!double.IsInfinity(cas))
+                                    {
+                                        int hodiny = (int)cas;
+                                        int minuty = (int)Math.Round((cas - (double)hodiny) * 60d, 0, MidpointRounding.AwayFromZero);
+                                        timeRemaining = new TimeSpan(hodiny, minuty, 0);
+                                    }
+                                    else
+                                        timeRemaining = TimeSpan.MaxValue;
+                                }
+                                else if(report.Status == Windows.System.Power.BatteryStatus.Charging)
+                                {
+                                    double cas = ((double)kapacita - (double)zbyva) / Math.Abs(prumernaSpotreba);
+                                    if (!double.IsInfinity(cas))
+                                    {
+                                        int hodiny = (int)cas;
+                                        int minuty = (int)Math.Round((cas - (double)hodiny) * 60d, 0, MidpointRounding.AwayFromZero);
+                                        timeRemaining = new TimeSpan(hodiny, minuty, 0);
+                                    }
+                                    else
+                                        timeRemaining = TimeSpan.MaxValue;
                                 }
                                 else
+                                {
                                     timeRemaining = TimeSpan.MaxValue;
+                                }
                             }
                         }
                         else { present = false; }
