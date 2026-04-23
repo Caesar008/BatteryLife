@@ -203,7 +203,7 @@ namespace BatteryLife
                                 {
                                     celkemSpotreba += i.Value;
                                 }
-                                int prumernaSpotreba = (int)Math.Round((double)celkemSpotreba / 10d, 0, MidpointRounding.AwayFromZero);
+                                int prumernaSpotreba = (int)Math.Round((double)celkemSpotreba / 30d, 0, MidpointRounding.AwayFromZero);
 
                                 double cas = (double)zbyva / Math.Abs(prumernaSpotreba);
                                 if (!double.IsInfinity(cas))
